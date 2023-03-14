@@ -8,6 +8,9 @@
 #include "GameFramework/Controller.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GamePlayStatics.h"
+#include "OnlineSubsystem.h"
+#include "Interfaces/OnlineSessionInterface.h"
+
 
 //////////////////////////////////////////////////////////////////////////
 // AUnrealNetworkCharacter
@@ -50,6 +53,23 @@ AUnrealNetworkCharacter::AUnrealNetworkCharacter()
 
 	// Note: The skeletal mesh and anim blueprint references on the Mesh component (inherited from Character) 
 	// are set in the derived blueprint asset named ThirdPersonCharacter (to avoid direct content references in C++)
+
+
+	IOnlineSubsystem* OnlineSubsystem = IOnlineSubsystem::Get();
+	if (OnlineSubsystem)
+	{
+		OnlineSessionInterface = OnlineSubsystem->GetSessionInterface();
+
+		if (GEngine)
+		{
+			GEngine->AddOnScreenDebugMessage(
+				-1, 15, FColor::Blue, FString::Printf(TEXT("Found Subsystem %s"), *OnlineSubsystem->GetSubsystemName().ToString())
+			);
+		}
+	}
+
+
+
 }
 
 //////////////////////////////////////////////////////////////////////////
@@ -78,30 +98,6 @@ void AUnrealNetworkCharacter::SetupPlayerInputComponent(class UInputComponent* P
 	PlayerInputComponent->BindTouch(IE_Released, this, &AUnrealNetworkCharacter::TouchStopped);
 }
 
-void AUnrealNetworkCharacter::OpenLobby()
-{
-	UWorld* World = GetWorld();
-	if (World)
-	{
-		World->ServerTravel("/Game/Maps/Level1?listen");
-	}
-
-}
-
-void AUnrealNetworkCharacter::CallOpenLevel(const FString& Address)
-{
-	UGameplayStatics::OpenLevel(this, *Address);
-
-}
-
-void AUnrealNetworkCharacter::CallClientTravel(const FString& Address)
-{
-	APlayerController* playerController = GetGameInstance()->GetFirstLocalPlayerController();
-	if (playerController)
-	{
-		playerController->ClientTravel(Address, ETravelType::TRAVEL_Absolute); //FName이 아니라 FString을 받는다. (OpenLevel이랑 다른점)
-	}
-}
 
 
 

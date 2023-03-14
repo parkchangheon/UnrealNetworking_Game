@@ -62,15 +62,10 @@ public:
 	/** Returns FollowCamera subobject **/
 	FORCEINLINE class UCameraComponent* GetFollowCamera() const { return FollowCamera; }
 	
-	UFUNCTION(BlueprintCallable)
-	void OpenLobby();
 
-	UFUNCTION(BlueprintCallable)
-	void CallOpenLevel(const FString& Address);
+public:
 
-	UFUNCTION(BlueprintCallable)
-	void CallClientTravel(const FString& Address);
-
+	TSharedPtr<class IOnlineSession, ESPMode::ThreadSafe> OnlineSessionInterface;
 
 };
 
